@@ -16,17 +16,20 @@ export function SimpsonLab() {
   const exact = useMemo(() => exactish(fn.f, a, b), [fn, a, b]);
 
   const arcs = useMemo(() => {
-    const out: { d: string; x0: number; x2: number }[] = [];
+    const out: { x0: number; x2: number; p: (x: number) => number }[] = [];
     for (let i = 0; i < n; i += 2) {
       const x0 = a + i * h;
       const x1 = x0 + h;
       const x2 = x0 + 2 * h;
-      const p = parabolaThrough([x0, fn.f(x0)], [x1, fn.f(x1)], [x2, fn.f(x2)]);
-      out.push({ d: "", x0, x2, ...{ p } } as never);
-      (out[out.length - 1] as unknown as { p: (x: number) => number }).p = p;
+      out.push({
+        x0,
+        x2,
+        p: parabolaThrough([x0, fn.f(x0)], [x1, fn.f(x1)], [x2, fn.f(x2)]),
+      });
     }
-    return out as unknown as { x0: number; x2: number; p: (x: number) => number }[];
+    return out;
   }, [fn, a, h, n]);
+
 
   const onFn = (id: string) => {
     const nf = getFunction(id);
